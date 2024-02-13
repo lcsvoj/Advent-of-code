@@ -1,0 +1,36 @@
+[33mcommit 5762e5d816d197178a7ed0e991b2a09448eacd25[m
+Author: Lucas Vilela <lucasvilela.jr@gmail.com>
+Date:   Tue Feb 13 18:00:30 2024 +0100
+
+    Update .gitignore
+
+[1mdiff --git a/.gitignore b/.gitignore[m
+[1mindex b3f7f10..57d3107 100644[m
+[1m--- a/.gitignore[m
+[1m+++ b/.gitignore[m
+[36m@@ -1 +1,23 @@[m
+[31m-desktop.ini[m
+\ No newline at end of file[m
+[32m+[m[32m# If you prefer the allow list template instead of the deny list, see community template:[m
+[32m+[m[32m# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore[m
+[32m+[m[32m#[m
+[32m+[m[32m# Binaries for programs and plugins[m
+[32m+[m[32m*.exe[m
+[32m+[m[32m*.exe~[m
+[32m+[m[32m*.dll[m
+[32m+[m[32m*.so[m
+[32m+[m[32m*.dylib[m
+[32m+[m
+[32m+[m[32m# Test binary, built with `go test -c`[m
+[32m+[m[32m*.test[m
+[32m+[m
+[32m+[m[32m# Output of the go coverage tool, specifically when used with LiteIDE[m
+[32m+[m[32m*.out[m
+[32m+[m
+[32m+[m[32m# Dependency directories (remove the comment below to include it)[m
+[32m+[m[32m# vendor/[m
+[32m+[m
+[32m+[m[32m# Go workspace file[m
+[32m+[m[32mgo.work[m
+[32m+[m
+[32m+[m[32mdesktop.ini[m
