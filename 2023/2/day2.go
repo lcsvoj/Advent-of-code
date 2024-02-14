@@ -29,7 +29,9 @@ func main() {
 			fmt.Println(set)
 		}
 	}
-	fmt.Println(CountGames(games))
+	fmt.Println("\nThe possible games sum is", CountGames(games))
+
+	fmt.Println("The sum of powers is", SumOfPowers(games))
 }
 
 // ReadLines returns []string with the read lines, each describing one game
@@ -116,6 +118,7 @@ func isPossible(game []Set) bool {
 	return true
 }
 
+// CountGames returns the sum of the game number identifiers of all possible game
 func CountGames(games map[int][]Set) int {
 	var sum int
 	for gameNumber, game := range games {
@@ -124,4 +127,41 @@ func CountGames(games map[int][]Set) int {
 		}
 	}
 	return sum
+}
+
+// GameMinSet returns the minimum number of cubes (of each color) required to make a game possible
+func GameMin(game []Set) Set {
+	var minRed, minGreen, minBlue int
+	for _, set := range game {
+
+		if set.Red > minRed {
+			minRed = set.Red
+		}
+
+		if set.Green > minGreen {
+			minGreen = set.Green
+		}
+
+		if set.Blue > minBlue {
+			minBlue = set.Blue
+		}
+	}
+	minSet := Set{minRed, minGreen, minBlue}
+	return minSet
+}
+
+// GameMinPower returns sum of the multiplications between the minimun number of
+// cubes (of each color) required to make the games possible
+func SumOfPowers(games map[int][]Set) int {
+	var sumOfPowers int
+	for gameNum, sets := range games {
+		fmt.Println("\nFor the game", gameNum)
+		gameMinSet := GameMin(sets)
+		fmt.Println("The min set is", gameMinSet)
+		gamePower := gameMinSet.Red * gameMinSet.Green * gameMinSet.Blue
+		fmt.Println("The power is", gamePower)
+		sumOfPowers += gamePower
+		fmt.Println("The new sum is", sumOfPowers)
+	}
+	return sumOfPowers
 }
