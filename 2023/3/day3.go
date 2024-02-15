@@ -48,6 +48,10 @@ func ReadInput() [][]rune {
 // isIsolated checks surroundings of the cell determined by the coordinates row and column on the passed grid
 // if it has no symbols around it, it returns false, and true if it doesn't
 func isIsolated(grid [][]rune, row, column int) bool {
+	if grid[row][column] == '.' {
+		return false
+	}
+
 	for i := row - 1; i <= row+1; i++ {
 		for j := column - 1; j <= column+1; j++ {
 			// Skip if out of the grid
