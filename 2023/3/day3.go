@@ -48,28 +48,49 @@ func ReadInput() [][]rune {
 // isIsolated checks surroundings of the cell determined by the coordinates row and column on the passed grid
 // if it has no symbols around it, it returns false, and true if it doesn't
 func isIsolated(grid [][]rune, row, column int) bool {
-	if grid[row][column] == '.' {
-		return false
-	}
 
-	for i := row - 1; i <= row+1; i++ {
-		for j := column - 1; j <= column+1; j++ {
+	startRow, endRow := row-1, row+1
+	startColumn, endColumn := column-1, column+1
+	fmt.Printf("\n\tisIsolated (%d, %d) ?\n", row, column)
+	fmt.Printf("\tstartRow = %d \t endRow = %d \t startColumn = %d \t endColumn = %d\n", startRow, endRow, startColumn, endColumn)
+
+	for i := startRow; i <= endRow; i++ {
+		for j := startColumn; j <= endColumn; j++ {
+
+			fmt.Printf("\t\tCurrently checking (%d, %d)\n", i, j)
+
 			// Skip if out of the grid
 			if i < 0 || j < 0 || i > len(grid)-1 || j > len(grid[i])-1 {
+				fmt.Println("\t\t\tContinued because it's out of bounds")
+				continue
+			}
+
+			if grid[i][j] == '.' {
+				fmt.Println("\t\t\tContinuing because the cell is a dot")
 				continue
 			}
 
 			cellBeingVerified := grid[i][j]
-			// Skip the verification on the cell itself, or if it's a number
-			if unicode.IsNumber(cellBeingVerified) {
+			// Skip the verification on the cell itself
+			if unicode.IsNumber(cellBeingVerified) && (i == row && j == column) {
+				fmt.Println("\t\t\tContinued because it's the cell itself")
 				continue
 			}
+
+			if unicode.IsNumber(cellBeingVerified) {
+				// endColumn++
+				// fmt.Println("\t\t\tUpdating endColumn to", endColumn)
+				continue
+			}
+
 			// If the surrounding is not ".", the cell is not isolated
 			if grid[i][j] != '.' {
+				fmt.Println("\t\t\tReturning FALSE because the cell is not a dot\n")
 				return false
 			}
 		}
 	}
+	fmt.Println("\tReturning TRUE\n")
 	return true
 }
 
@@ -78,8 +99,17 @@ func CheckGrid(grid [][]rune) []string {
 	isolatedNumbers := make([]string, 0)
 	for i, line := range grid {
 		for j, _ := range line {
+
+			fmt.Printf("CHECKING THE GRID: (%d, %d)\n", i, j)
+			if !unicode.IsNumber(grid[i][j]) {
+				fmt.Println("Continuing because the cell is not numeric")
+				continue
+			}
+
 			if isIsolated(grid, i, j) {
+				fmt.Println("Isolated number FOUND")
 				isolatedNumbers = append(isolatedNumbers, string(grid[i][j]))
+				fmt.Println(isolatedNumbers)
 			}
 		}
 	}
