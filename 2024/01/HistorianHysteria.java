@@ -4,9 +4,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 // Pair up the smallest number in the left list with the smallest number in the right list, then the second-smallest left number with the second-smallest right number, and so on.
 // Within each pair, figure out how far apart the two numbers are; you'll need to add up all of those distances. For example, if you pair up a 3 from the left list with a 7 from the right list, the distance apart is 4; if you pair up a 9 with a 3, the distance apart is 6.
@@ -51,7 +49,6 @@ class HistorianHysteria {
     // multiplying it by the number of times that number appears in the right list.
     public long getSimilarityScore() {
         long score = 0L;
-        Map<Integer, Integer> similar = new HashMap<>();
         for (Integer v : leftList) {
             long adjustedValue = v * rightList.stream()
                     .filter(x -> x.equals(v))

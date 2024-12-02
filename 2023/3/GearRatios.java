@@ -3,6 +3,9 @@
  * There are lots of numbers and symbols you don't really understand, but apparently any number adjacent to a 
  * symbol, even diagonally, is a "part number" and should be included in your sum. (Periods (.) do not count as a symbol.)
  * What is the sum of all of the part numbers in the engine schematic?
+ * 
+ * A gear is any '*' symbol that is adjacent to exactly two part numbers. Its gear ratio is the result of multiplying those two numbers together.
+ * You also need to find the gear ratio of every gear and add them all up so that the engineer can figure out which gear needs to be replaced.
  */
 
 import java.io.BufferedReader;
@@ -16,12 +19,14 @@ import java.util.regex.Pattern;
 public class GearRatios {
 
     private List<Cell> symbols;
+    private List<Cell> gears;
     private List<Cell> numbers;
 
     public GearRatios(String fileName) {
         symbols = new ArrayList<>();
         numbers = new ArrayList<>();
         readCharacters(fileName);
+        gears = new ArrayList<>(symbols.stream().filter(c -> c.value.equals("*")).toList());
     }
 
     private void readCharacters(String fileName) {
@@ -76,24 +81,43 @@ public class GearRatios {
 
     }
 
-    public int getSum() {
+    public long getSumOfParts() {
         return numbers.stream()
-                .filter(n -> hasSymbolNear(n))
-                .mapToInt(n -> Integer.valueOf(n.value))
+                .filter(n -> (countSymbolsNear(n) > 0))
+                .mapToLong(n -> Integer.valueOf(n.value))
                 .sum();
     }
 
-    private boolean hasSymbolNear(Cell number) {
+    public long getSumOfGears() {
+        long sumGears = 0;
+        for (Cell gear : gears) {
+            List<Cell> nearNumbers = findNumbersNear(gear);
+            if (nearNumbers.size() == 2) {
+                sumGears += nearNumbers.stream().mapToLong(n -> Long.valueOf(n.value)).reduce(1, (a, b) -> a * b);
+            }
+        }
+        return sumGears;
+    }
+
+    private long countSymbolsNear(Cell number) {
         return (symbols.stream()
                 .filter(c -> ((number.row >= c.row - 1) && (number.row <= c.row + 1) && (number.finalColumn >= c.initialColumn - 1) && (number.initialColumn <= c.initialColumn + 1)))
-                .count() > 0);
+                .count());
+    }
+
+    private List<Cell> findNumbersNear(Cell symbol) {
+        return (numbers.stream()
+                .filter(n -> ((n.row >= symbol.row - 1) && (n.row <= symbol.row + 1) && (n.finalColumn >= symbol.initialColumn - 1) && (n.initialColumn <= symbol.initialColumn + 1)))
+                .toList());
     }
 
     public static void main(String[] args) {
         GearRatios gr = new GearRatios("C:\\Users\\Lucas\\Documents\\My Repos\\Advent-of-code\\2023\\3\\input.txt");
         // System.out.println("Symbols: " + gr.symbols.toString());
         // System.out.println("Numbers: " + gr.numbers.toString());
-        System.out.println("Sum: " + gr.getSum());
+        // System.out.println("Gears: " + gr.gears.toString());
+        System.out.println("Sum: " + gr.getSumOfParts());
+        System.out.println("Sum of gears: " + gr.getSumOfGears());
     }
 
 }
