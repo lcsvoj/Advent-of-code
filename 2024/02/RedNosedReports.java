@@ -3,6 +3,7 @@
  * So, a report only counts as safe if both of the following are true:
  * - The levels are either all increasing or all decreasing.
  * - Any two adjacent levels differ by at least one and at most three.
+ * Also, if removing a single level from an unsafe report would make it safe, the report instead counts as safe.
  * Analyze the unusual data from the engineers. How many reports are safe?
  */
 
@@ -52,18 +53,19 @@ class RedNosedReports {
         if (report.size() < 2) {
             return false;
         }
-        if (testReport(report)) {
+        if (testReport(report)) {  // If report is safe as it is, it's considered safe
             return true;
-        } else {
-            for (int i = 0; i < report.size(); i++) {
-                List<Integer> newReport = new ArrayList<>(report);
-                newReport.remove(i);
-                if (testReport(newReport)) {
-                    return true;
-                }
-            }
-            return false;
         }
+
+        // Otherwise, try to make it safe removing a single level from it
+        for (int i = 0; i < report.size(); i++) {
+            List<Integer> newReport = new ArrayList<>(report);
+            newReport.remove(i);
+            if (testReport(newReport)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean testReport(List<Integer> report) {
@@ -71,14 +73,13 @@ class RedNosedReports {
         for (int i = 1; i < report.size(); i++) {
 
             // The levels are either all increasing or all decreasing.
-            int dif = report.get(i) - report.get(i - 1);
-            if (shouldIncrease && dif < 0 || !shouldIncrease && dif > 0) {
+            int diff = report.get(i) - report.get(i - 1);
+            if (shouldIncrease && diff < 0 || !shouldIncrease && diff > 0) {
                 return false;
             }
 
             // Any two adjacent levels differ by at least one and at most three.
-            int absoluteDif = Math.abs(dif);
-            if (absoluteDif < 1 || absoluteDif > 3) {
+            if (Math.abs(diff) < 1 || Math.abs(diff) > 3) {
                 return false;
             }
         }
