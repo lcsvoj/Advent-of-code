@@ -2,7 +2,6 @@
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Scanner;
-import java.util.regex.MatchResult;
 
 /* The computer appears to be trying to run a program, but its memory (your puzzle input) is corrupted.
  * It seems like the goal of the program is just to multiply some numbers. 
@@ -15,12 +14,23 @@ public class MullItOver {
 
     public static long getSum(String fileName) {
         long sum = 0;
-        String mul = null;
+        String str = null;
+        boolean active = true;
         try (Scanner in = new Scanner(new FileInputStream(fileName))) {
-            sum = in.findAll("mul\\([0-9]+,[0-9]+\\)")
-                    .map(MatchResult::group)
-                    .mapToLong(MullItOver::compute)
-                    .sum();
+            while ((str = in.findWithinHorizon("mul\\([0-9]+,[0-9]+\\)|don't\\(\\)|do\\(\\)", 0)) != null) {
+                switch (str) {
+                    case "do()":
+                        active = true;
+                        break;
+                    case "don't()":
+                        active = false;
+                        break;
+                    default:
+                        if (active) {
+                            sum += compute(str);
+                        }
+                }
+            }
         } catch (IOException e) {
             System.out.println("Invalid fileName: " + fileName);
         }
@@ -33,6 +43,7 @@ public class MullItOver {
         int secondParenthesis = mul.indexOf(')');
         long x = Long.parseLong(mul.substring(firstParenthesis + 1, comma));
         long y = Long.parseLong(mul.substring(comma + 1, secondParenthesis));
+        // System.out.printf(" = %d * %d = %d\n", x, y, Math.multiplyExact(x, y));
         return Math.multiplyExact(x, y);
     }
 
