@@ -10,7 +10,9 @@ import java.util.List;
  * The Elf has for you both the page ordering rules and the pages to produce in each update (your puzzle input), but can't figure out whether each update has the pages in the right order.
  * In the input, the first section specifies the page ordering rules, one per line, and the second section specifies on each update (one per line) the page numbers to be updated.
  * The ordering rules involving undescribed page numbers are ignored.
- * 1. Start by identifying which updates are already in the right order (the described page order in the update follow all appliable rules).
+ * For some reason, the Elves also need to know the middle page number of each update being printed.
+ * 1. What do you get if you add up the middle page number from those correctly-ordered updates?
+ * 2. What do you get if you add up the middle page numbers after correctly ordering only the initially incorrectly ordered updates?
  */
 public class PrintQueue {
 
@@ -52,6 +54,27 @@ public class PrintQueue {
 
     }
 
+    @SuppressWarnings("UnnecessaryContinue")
+    private Update fixUpdate(Update u) {
+
+        if (u.isValid) {
+            return u;
+        }
+
+        Update newU = new Update(u.pages);
+        for (List<Integer> rule : rules) {
+            int x = rule.get(0);
+            int y = rule.get(1);
+            if (!(u.pages.contains(x) && u.pages.contains(y))) {
+                continue;  // The ordering rules involving undescribed page numbers are ignored.
+            } else if (!(u.pages.indexOf(x) < u.pages.indexOf(y))) {
+                newU.pages.set(u.pages.indexOf(x), y);
+                newU.pages.set(u.pages.indexOf(y), x);
+            }
+        }
+        return fixUpdate(newU);
+    }
+
     private void computeInput(String fileName) {
         List<List<Integer>> r = new ArrayList<>();
         List<Update> u = new ArrayList<>();
@@ -83,8 +106,21 @@ public class PrintQueue {
         int sum = 0;
         for (Update u : updates) {
             if (u.isValid) {
-                // System.out.printf("The update %s is valid, adding %d to the sum.\n", u.toString(), u.middlePage);
                 sum += u.middlePage;
+            }
+        }
+        return sum;
+    }
+
+    private int fixAndSumInvalidUpdates() {
+        int sum = 0;
+        for (Update u : updates) {
+            if (!u.isValid) {
+                System.out.printf("The update %s is invalid.\n", u.pages.toString());
+                Update f = fixUpdate(u);
+                System.out.printf("\tFixing it returned the new update %s with middle value %d.\n", f.pages.toString(), f.middlePage);
+                sum += f.middlePage;
+                System.out.printf("The sum is now %d.\n", sum);
             }
         }
         return sum;
@@ -94,6 +130,6 @@ public class PrintQueue {
         String fileName = "C:\\Users\\Lucas\\Documents\\My Repos\\Advent-of-code\\2024\\05\\input.txt";
         PrintQueue p = new PrintQueue(fileName);
         // System.out.println("Rules: " + (p.rules.toString()));
-        System.out.println(p.sumValidUpdates());
+        System.out.println(p.fixAndSumInvalidUpdates());
     }
 }
