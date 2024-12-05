@@ -3,6 +3,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CeresSearch {
@@ -47,6 +48,44 @@ public class CeresSearch {
                     searchLetterInVicinities(row, column, 1, Direction.ANY);
                 }
             }
+        }
+    }
+
+    private void findXWords() {
+        // Search each charatcer in the matrix looking for an 'A'
+        for (int row = 0; row < matrix_rows; row++) {
+            for (int column = 0; column < matrix_columns; column++) {
+                if (matrix[row][column] == 'A') {  // If the 'A' is found, test if it's part of a X-MAS pattern
+                    System.out.printf("First letter in (%d, %d)\n", row, column);
+                    if (isXPattern(row, column)) {
+                        System.out.println("\tIt's an x-pattern!");
+                        wordsInMatrix++;
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean isXPattern(int row, int column) {
+        try {
+            char[] foundPattern = new char[]{
+                matrix[row - 1][column - 1],
+                matrix[row - 1][column + 1],
+                matrix[row + 1][column - 1],
+                matrix[row + 1][column + 1]
+            };
+            List<List<Character>> validPatterns = Arrays.asList(
+                    Arrays.asList('M', 'S', 'M', 'S'),
+                    Arrays.asList('S', 'M', 'S', 'M'),
+                    Arrays.asList('S', 'S', 'M', 'M'),
+                    Arrays.asList('M', 'M', 'S', 'S')
+            );
+            List<Character> foundPatternList = Arrays.asList(
+                    foundPattern[0], foundPattern[1], foundPattern[2], foundPattern[3]
+            );
+            return validPatterns.contains(foundPatternList);
+        } catch (IndexOutOfBoundsException e) {
+            return false;
         }
     }
 
@@ -122,7 +161,7 @@ public class CeresSearch {
     public static void main(String[] args) {
         String fileName = "C:\\Users\\Lucas\\Documents\\My Repos\\Advent-of-code\\2024\\04\\input.txt";
         CeresSearch c = new CeresSearch(fileName, "XMAS");
-        c.findWords();
+        c.findXWords();
         System.out.println("Total words found = " + c.wordsInMatrix);
     }
 
