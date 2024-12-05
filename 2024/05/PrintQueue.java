@@ -3,7 +3,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /* New pages for the safety manuals must be printed in a very specific order.
@@ -15,16 +14,16 @@ import java.util.List;
  */
 public class PrintQueue {
 
-    private Integer[][] rules;
-    private Integer[][] updates;
+    private List<List<Integer>> rules;
+    private List<List<Integer>> updates;
 
     public PrintQueue(String fileName) {
         computeInput(fileName);
     }
 
     private void computeInput(String fileName) {
-        List<Integer[]> r = new ArrayList<>();
-        List<Integer[]> u = new ArrayList<>();
+        List<List<Integer>> r = new ArrayList<>();
+        List<List<Integer>> u = new ArrayList<>();
         try (BufferedReader in = new BufferedReader(new FileReader(fileName))) {
             String line = null;
             while ((line = in.readLine()) != null) {
@@ -34,27 +33,27 @@ public class PrintQueue {
                     u.add(decode(line, 'u'));
                 }
             }
-            rules = r.toArray(Integer[][]::new);
-            updates = u.toArray(Integer[][]::new);
+            rules = r;
+            updates = u;
         } catch (IOException e) {
             System.out.println("Invalid fileName: " + fileName);
         }
     }
 
-    private Integer[] decode(String line, char type) {
+    private List<Integer> decode(String line, char type) {
         String splittingChar = (type == 'r') ? "\\|" : ",";
         String[] s = line.split(splittingChar);
         List<Integer> n = new ArrayList<>();
         for (String nStr : s) {
             n.add(Integer.valueOf(nStr));
         }
-        return n.toArray(Integer[]::new);
+        return n;
     }
 
     public static void main(String[] args) {
         String fileName = "C:\\Users\\Lucas\\Documents\\My Repos\\Advent-of-code\\2024\\05\\test.txt";
         PrintQueue p = new PrintQueue(fileName);
-        System.out.println("Rules: " + Arrays.toString(p.rules));
-        System.out.println("Updates: " + Arrays.toString(p.updates));
+        System.out.println("Rules: " + (p.rules.toString()));
+        System.out.println("Updates: " + (p.updates.toString()));
     }
 }
