@@ -11,6 +11,7 @@ public class CeresSearch {
     private final char[][] matrix;
     private final int matrix_rows;
     private final int matrix_columns;
+    private int wordsInMatrix;
 
     public CeresSearch(String fileName, String word) {
         // Set the word as a char[]
@@ -20,6 +21,8 @@ public class CeresSearch {
         matrix = buildMatrixFromFile(fileName);
         matrix_rows = matrix.length;
         matrix_columns = matrix[0].length;
+
+        wordsInMatrix = 0;
     }
 
     private char[][] buildMatrixFromFile(String fileName) {
