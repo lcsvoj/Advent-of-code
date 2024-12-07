@@ -9,7 +9,6 @@ public class BridgeRepair {
 
     private final List<Long> testValues;
     private final List<List<Long>> operands;
-    private final char[] OP = {'*', '+'};  // Available operators
 
     public BridgeRepair(String fileName) {
         testValues = new ArrayList<>();
@@ -23,7 +22,7 @@ public class BridgeRepair {
             while ((line = in.readLine()) != null) {
                 String[] split1 = line.split(":");              // "190: 10 19" -> {"190", " 10 19"}
                 String[] split2 = split1[1].strip().split(" "); // " 10 19" -> "10 19" -> {"10", "19"}
-                List<Long> operands = new ArrayList<>();           // {"10", "19"} -> {10, 19}
+                List<Long> operands = new ArrayList<>();              // {"10", "19"} -> {10, 19}
                 for (String nStr : split2) {
                     operands.add(Long.valueOf(nStr));
                 }
@@ -51,12 +50,13 @@ public class BridgeRepair {
     }
 
     private boolean isValid(List<Long> operands, long testValue, long currentValue) {
-        boolean testSum = testEquation(operands, '+', testValue, currentValue);
-        boolean testProduct = testEquation(operands, '*', testValue, currentValue);
-        return (testSum || testProduct);
+        boolean testSum = testEquation(operands, "+", testValue, currentValue);
+        boolean testProduct = testEquation(operands, "*", testValue, currentValue);
+        boolean testConcat = testEquation(operands, "||", testValue, currentValue);
+        return (testSum || testProduct || testConcat);
     }
 
-    private boolean testEquation(List<Long> operands, char operator, long testValue, long currentValue) {
+    private boolean testEquation(List<Long> operands, String operator, long testValue, long currentValue) {
         // System.out.println("Testing with operator " + operator + ", operands " + operands + ", test value " + testValue);
         if (currentValue == testValue && operands.isEmpty()) {
             // System.out.println("Current value equals test value: " + currentValue);
@@ -69,10 +69,12 @@ public class BridgeRepair {
         }
 
         currentValue = switch (operator) {
-            case '+' ->
+            case "+" ->
                 currentValue + operands.getFirst();
-            case '*' ->
+            case "*" ->
                 currentValue * operands.getFirst();
+            case "||" ->
+                Long.valueOf(String.valueOf(currentValue).concat(String.valueOf(operands.getFirst())));
             default ->
                 throw new IllegalArgumentException("Unexpected value: " + operator);
         };
