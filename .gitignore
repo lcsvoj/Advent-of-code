@@ -17,6 +17,8 @@
 # input and tests files
 input.txt
 test.txt
+*.json
+*.md
 
 # Go workspace file
 go.work
