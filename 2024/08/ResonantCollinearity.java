@@ -18,14 +18,14 @@ public class ResonantCollinearity {
     private final Set<List<Integer>> antinodes;
     private final int max_row;
     private final int max_col;
-    private int antinodesCount;
+    private final int antinodesCount;
 
     public ResonantCollinearity(String fileName) {
         map = buildMap(fileName);
         max_row = map.length - 1;
         max_col = map[0].length - 1;
 
-        antennas = findAntennas();
+        antennas = listAntennas();
 
         antinodes = new HashSet<>();
         findAntinodes();
@@ -45,7 +45,7 @@ public class ResonantCollinearity {
         return m.toArray(char[][]::new);
     }
 
-    private Map<List<Integer>, Character> findAntennas() {
+    private Map<List<Integer>, Character> listAntennas() {
         Map<List<Integer>, Character> ant = new HashMap<>();
         for (int i = 0; i <= max_row; i++) {
             for (int j = 0; j <= max_col; j++) {
@@ -59,66 +59,65 @@ public class ResonantCollinearity {
     }
 
     private void findAntinodes() {
-        // List<List<List<Integer>>> alreadyAnalyzed = new ArrayList<>();
         for (List<Integer> antenna : antennas.keySet()) {
             List<List<Integer>> pairs = antennas.keySet().stream().filter(k -> (!k.equals(antenna) && Objects.equals(antennas.get(k), antennas.get(antenna)))).toList();
             for (List<Integer> pair : pairs) {
-                // List<List<Integer>> analyzing = List.of(antenna, pair);
-                // if (alreadyAnalyzed.contains(analyzing) || alreadyAnalyzed.contains(analyzing.reversed())) {
-                //     continue;
-                // }
-                setAntinodes(antenna, pair);
-                // alreadyAnalyzed.add(analyzing);
+                listAntinodes(antenna, pair);
             }
         }
     }
 
-    private void setAntinodes(List<Integer> antenna, List<Integer> pair) {
+    private void listAntinodes(List<Integer> antenna, List<Integer> pair) {
 
         // Calculate vertical and horizontal displacement
         int v = Math.abs(antenna.get(0) - pair.get(0));
         int h = Math.abs(antenna.get(1) - pair.get(1));
 
         // Antena-side antinode coordinates
-        int xa = (antenna.get(0) < pair.get(0)) ? antenna.get(0) - v : antenna.get(0) + v;
-        int ya = (antenna.get(1) < pair.get(1)) ? antenna.get(1) - h : antenna.get(1) + h;
-        setAntinode(xa, ya);
+        // int xa = (antenna.get(0) < pair.get(0)) ? antenna.get(0) - v : antenna.get(0) + v;
+        // int ya = (antenna.get(1) < pair.get(1)) ? antenna.get(1) - h : antenna.get(1) + h;
+        int xa = antenna.get(0), ya = antenna.get(1);
+        do {
+            listAntinode(xa, ya);
+            xa = (antenna.get(0) < pair.get(0)) ? xa - v : xa + v;
+            ya = (antenna.get(1) < pair.get(1)) ? ya - h : ya + h;
+        } while (inBounds(xa, ya));
 
         // Pair-side antinode coordinates
-        int xp = (pair.get(0) > antenna.get(0)) ? pair.get(0) + v : pair.get(0) - v;
-        int yp = (pair.get(1) > antenna.get(1)) ? pair.get(1) + h : pair.get(1) - h;
-        setAntinode(xp, yp);
+        // int xp = (pair.get(0) > antenna.get(0)) ? pair.get(0) + v : pair.get(0) - v;
+        // int yp = (pair.get(1) > antenna.get(1)) ? pair.get(1) + h : pair.get(1) - h;
+        int xp = pair.get(0), yp = pair.get(1);
+        do {
+            listAntinode(xp, yp);
+            xp = (pair.get(0) > antenna.get(0)) ? xp + v : xp - v;
+            yp = (pair.get(1) > antenna.get(1)) ? yp + h : yp - h;
+        } while (inBounds(xp, yp));
 
     }
 
-    private void setAntinode(int x, int y) {
-        if (!(x < 0 || y < 0 || x > max_row || y > max_col)) {
+    private void listAntinode(int x, int y) {
+        if (inBounds(x, y)) {
             List<Integer> antinode = List.of(x, y);
             if (!antinodes.contains(antinode)) {
                 antinodes.add(antinode);
             }
         }
-        // this.print();
+    }
+
+    private boolean inBounds(int x, int y) {
+        return !(x < 0 || y < 0 || x > max_row || y > max_col);
     }
 
     public void print() {
         for (char[] line : map) {
             System.out.println(Arrays.toString(line));
         }
-
-        // System.out.printf(" Rows: %d \n Columns: %d\n", max_row, max_col);
-        // System.out.println(" Antennas:");
-        // for (int[] key : antennas.keySet()) {
-        //     System.out.printf("\t%s [%d, %d]\n", antennas.get(key), key[0], key[1]);
-        // }
     }
 
     public static void main(String[] args) {
         String fileName = "C:\\Users\\Lucas\\Documents\\My Repos\\Advent-of-code\\2024\\08\\input.txt";
         ResonantCollinearity m = new ResonantCollinearity(fileName);
-        // m.print();
         System.out.println(m.antinodesCount);
-        // m.print();
     }
 
 }
